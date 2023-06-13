@@ -196,6 +196,14 @@ app.get("/songs", (req, res) => {
 
 });
 
+app.get("/search/:query", async (req, res) => {
+  let query = req.params.query;
+
+  let items = await spotifySearch(query);
+
+  res.send(items);
+});
+
 app.post("/search", async (req, res) => {
   let data = req.body;
 
