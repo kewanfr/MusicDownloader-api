@@ -186,6 +186,16 @@ app.get("/songs/:fileName", (req, res) => {
 
 });
 
+app.get("/songs", (req, res) => {
+
+  let songs = fs.readdirSync("./songs");
+
+  songs = songs.filter((s) => s.endsWith(".mp3"));
+
+  res.send(songs);
+
+});
+
 app.post("/search", async (req, res) => {
   let data = req.body;
 
