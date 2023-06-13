@@ -164,6 +164,7 @@ const downloadSongFromDatas = async (data) => {
     duration_ms,
     path: songPath
   });
+  fs.writeFileSync("songsList.json", JSON.stringify(songsList));
 
   let absolutePath = `${process.cwd()}/${songPath}`;
   return absolutePath;
