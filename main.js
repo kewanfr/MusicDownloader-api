@@ -246,7 +246,7 @@ app.post("/searchDownload", async (req, res) => {
   let items = await spotifySearch(req.body.query);
 
   let songPath = await downloadSongFromDatas(items[0]);
-  res.sendFile(absolutePath);
+  res.sendFile(songPath);
 
 });
 
@@ -257,7 +257,7 @@ app.get("/searchDownload/:query", async (req, res) => {
   let items = await spotifySearch(query);
 
   let songPath = await downloadSongFromDatas(items[0]);
-  res.sendFile(absolutePath);
+  res.sendFile(songPath);
 
 });
 
