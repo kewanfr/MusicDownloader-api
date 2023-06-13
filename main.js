@@ -125,6 +125,38 @@ const downloadSongSpotify = async (url, path) => {
   return songBuffer;
 }
 
+const downloadSongFromDatas = async (data) => {
+  let { name, artist, id, uri, cover, album, duration_ms } = data;
+
+  let songName = `${name} - ${artist}`;
+  let songPathBefore = `./songs/${songName}_.mp3`;
+  let songPath = `./songs/${songName}.mp3`;
+  let songPathCover = `./songs/${songName}.jpg`;
+
+  console.log(`Téléchargement de la musique : ${songName}`);
+
+  // regarder si le fichier existe
+  if (fs.existsSync(songPath)) {
+    let absolutePath = `${process.cwd()}/${songPath}`;
+    console.log(`Fichier déjà téléchargé : ${songPath}`);
+    return absolutePath;
+  }
+
+  let downloadedSong = await downloadSongSpotify(uri, songPathBefore);
+  console.log(`Musique téléchargée : ${songName}`);
+  let downloadedCover = await downloadCover(cover, songPathCover);
+  console.log(`Cover téléchargée : ${songName}`);
+  await addImageToMp3(songPathBefore, songPathCover, songPath);
+  console.log(`Cover ajoutée : ${songName}`);
+  // delete songPathBefore
+  fs.unlinkSync(songPathBefore);
+  fs.unlinkSync(songPathCover);
+  console.log(`Fichiers temporaires supprimés : ${songPathBefore}`);
+
+  let absolutePath = `${process.cwd()}/${songPath}`;
+  return absolutePath;
+}
+
 if(!fs.existsSync("./songs")) {
   fs.mkdirSync("./songs");
 }
@@ -142,9 +174,11 @@ app.get("/songs/:fileName", (req, res) => {
   }
 
   if(!fs.existsSync(`./songs/${fileName}`)) {
+    console.log(`File not found : ${fileName}`);
     res.status(404).send("Not found");
     return;
   }
+  console.log(`Serve file : ${fileName}`);
 
   let absolutePath = `${process.cwd()}/songs/${fileName}`;
 
@@ -164,34 +198,8 @@ app.post("/search", async (req, res) => {
 app.post("/download", async (req, res) => {
   let data = req.body;
 
-  let { name, artist, id, uri, cover, album, duration_ms } = data;
-
-  
-  let songName = `${name} - ${artist}`;
-  let songPathBefore = `./songs/${songName}_.mp3`;
-  let songPath = `./songs/${songName}.mp3`;
-  let songPathCover = `./songs/${songName}.jpg`;
-
-  // regarder si le fichier existe
-  if (fs.existsSync(songPath)) {
-    let absolutePath = `${process.cwd()}/${songPath}`;
-    res.sendFile(absolutePath);
-    return;
-  }
-
-  let downloadedSong = await downloadSongSpotify(uri, songPathBefore);
-  console.log(`Musique téléchargée : ${songName}`);
-  let downloadedCover = await downloadCover(cover, songPathCover);
-  console.log(`Cover téléchargée : ${songName}`);
-  await addImageToMp3(songPathBefore, songPathCover, songPath);
-  console.log(`Cover ajoutée : ${songName}`);
-  // delete songPathBefore
-  fs.unlinkSync(songPathBefore);
-  fs.unlinkSync(songPathCover);
-  console.log(`Fichiers temporaires supprimés : ${songPathBefore}`);
-
-  let absolutePath = `${process.cwd()}/${songPath}`;
-  res.sendFile(absolutePath);
+  let song = await downloadSongFromDatas(data);
+  return res.sendFile(song);
 
 });
 
@@ -199,7 +207,6 @@ app.post("/search", async (req, res) => {
   let data = req.body;
 
   let items = await spotifySearch(data.query);
-
   res.send(items);
 
 });
@@ -208,32 +215,7 @@ app.post("/searchDownload", async (req, res) => {
 
   let items = await spotifySearch(req.body.query);
 
-  let { name, artist, id, uri, cover, album, duration_ms } = items[0];
-
-  let songName = `${name} - ${artist}`;
-  let songPathBefore = `./songs/${songName}_.mp3`;
-  let songPath = `./songs/${songName}.mp3`;
-  let songPathCover = `./songs/${songName}.jpg`;
-
-  // regarder si le fichier existe
-  if (fs.existsSync(songPath)) {
-    let absolutePath = `${process.cwd()}/${songPath}`;
-    res.sendFile(absolutePath);
-    return;
-  }
-
-  let downloadedSong = await downloadSongSpotify(uri, songPathBefore);
-  console.log(`Musique téléchargée : ${songName}`);
-  let downloadedCover = await downloadCover(cover, songPathCover);
-  console.log(`Cover téléchargée : ${songName}`);
-  await addImageToMp3(songPathBefore, songPathCover, songPath);
-  console.log(`Cover ajoutée : ${songName}`);
-  // delete songPathBefore
-  fs.unlinkSync(songPathBefore);
-  fs.unlinkSync(songPathCover);
-  console.log(`Fichiers temporaires supprimés : ${songPathBefore}`);
-
-  let absolutePath = `${process.cwd()}/${songPath}`;
+  let songPath = await downloadSongFromDatas(items[0]);
   res.sendFile(absolutePath);
 
 });
@@ -244,29 +226,7 @@ app.get("/searchDownload/:query", async (req, res) => {
 
   let items = await spotifySearch(query);
 
-  let { name, artist, id, uri, cover, album, duration_ms } = items[0];
-
-  let songName = `${name} - ${artist}`;
-  let songPathBefore = `./songs/${songName}_.mp3`;
-  let songPath = `./songs/${songName}.mp3`;
-  let songPathCover = `./songs/${songName}.jpg`;
-
-  // regarder si le fichier existe
-  if (fs.existsSync(songPath)) {
-    let absolutePath = `${process.cwd()}/${songPath}`;
-    res.sendFile(absolutePath);
-    return;
-  }
-
-  let downloadedSong = await downloadSongSpotify(uri, songPathBefore);
-  console.log()
-  let downloadedCover = await downloadCover(cover, songPathCover);
-  await addImageToMp3(songPathBefore, songPathCover, songPath);
-  // delete songPathBefore
-  fs.unlinkSync(songPathBefore);
-  fs.unlinkSync(songPathCover);
-
-  let absolutePath = `${process.cwd()}/${songPath}`;
+  let songPath = await downloadSongFromDatas(items[0]);
   res.sendFile(absolutePath);
 
 });
