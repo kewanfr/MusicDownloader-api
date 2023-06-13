@@ -195,12 +195,15 @@ app.post("/searchDownload", async (req, res) => {
   }
 
   let downloadedSong = await downloadSongSpotify(uri, songPathBefore);
-  console.log()
+  console.log(`Musique téléchargée : ${songName}`);
   let downloadedCover = await downloadCover(cover, songPathCover);
+  console.log(`Cover téléchargée : ${songName}`);
   await addImageToMp3(songPathBefore, songPathCover, songPath);
+  console.log(`Cover ajoutée : ${songName}`);
   // delete songPathBefore
   fs.unlinkSync(songPathBefore);
   fs.unlinkSync(songPathCover);
+  console.log(`Fichiers temporaires supprimés : ${songPathBefore}`);
 
   let absolutePath = `${process.cwd()}/${songPath}`;
   res.sendFile(absolutePath);
