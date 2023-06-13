@@ -171,9 +171,43 @@ app.post("/search", async (req, res) => {
   res.send(items);
 
 });
+
 app.post("/searchDownload", async (req, res) => {
 
   let items = await spotifySearch(req.body.query);
+
+  let { name, artist, id, uri, cover, album, duration_ms } = items[0];
+
+  let songName = `${name} - ${artist}`;
+  let songPathBefore = `./songs/${songName}_.mp3`;
+  let songPath = `./songs/${songName}.mp3`;
+  let songPathCover = `./songs/${songName}.jpg`;
+
+  // regarder si le fichier existe
+  if (fs.existsSync(songPath)) {
+    let absolutePath = `${process.cwd()}/${songPath}`;
+    res.sendFile(absolutePath);
+    return;
+  }
+
+  let downloadedSong = await downloadSongSpotify(uri, songPathBefore);
+  console.log()
+  let downloadedCover = await downloadCover(cover, songPathCover);
+  await addImageToMp3(songPathBefore, songPathCover, songPath);
+  // delete songPathBefore
+  fs.unlinkSync(songPathBefore);
+  fs.unlinkSync(songPathCover);
+
+  let absolutePath = `${process.cwd()}/${songPath}`;
+  res.sendFile(absolutePath);
+
+});
+
+app.get("/searchDownload/:query", async (req, res) => {
+
+  let query = req.params.query;
+
+  let items = await spotifySearch(query);
 
   let { name, artist, id, uri, cover, album, duration_ms } = items[0];
 
