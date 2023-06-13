@@ -125,6 +125,33 @@ const downloadSongSpotify = async (url, path) => {
   return songBuffer;
 }
 
+if(!fs.existsSync("./songs")) {
+  fs.mkdirSync("./songs");
+}
+
+if(!fs.existsSync("songsList.json")) {
+  fs.writeFileSync("songsList.json", JSON.stringify([]));
+}
+
+app.get("/songs/:fileName", (req, res) => {
+
+  let fileName = req.params.fileName;
+
+  if(!fileName.endsWith(".mp3")) {
+    fileName += ".mp3";
+  }
+
+  if(!fs.existsSync(`./songs/${fileName}`)) {
+    res.status(404).send("Not found");
+    return;
+  }
+
+  let absolutePath = `${process.cwd()}/songs/${fileName}`;
+
+  res.sendFile(absolutePath);
+
+});
+
 app.post("/search", async (req, res) => {
   let data = req.body;
 
@@ -133,6 +160,7 @@ app.post("/search", async (req, res) => {
   res.send(items);
 
 });
+
 app.post("/download", async (req, res) => {
   let data = req.body;
 
