@@ -153,6 +153,18 @@ const downloadSongFromDatas = async (data) => {
   fs.unlinkSync(songPathCover);
   console.log(`Fichiers temporaires supprimés : ${songPathBefore}`);
 
+  let songsList = JSON.parse(fs.readFileSync("songsList.json"));
+  songsList.push({
+    name,
+    artist,
+    id,
+    uri,
+    cover,
+    album,
+    duration_ms,
+    path: songPath
+  });
+
   let absolutePath = `${process.cwd()}/${songPath}`;
   return absolutePath;
 }
