@@ -1,0 +1,5 @@
+.env
+store/
+songs/
+node_modules/
+package-lock.json
