@@ -81,6 +81,7 @@ const spotifySearch = async (query) => {
       artists,
       duration_ms: item.duration_ms,
       album,
+      preview_url: item.preview_url
     }
   });
   return items;
