@@ -204,13 +204,21 @@ app.get("/songs/:fileName", (req, res) => {
 
 });
 
+// app.get("/songs", (req, res) => {
+
+//   let songs = fs.readdirSync("./songs");
+
+//   songs = songs.filter((s) => s.endsWith(".mp3"));
+
+//   res.send(songs);
+
+// });
+
 app.get("/songs", (req, res) => {
 
-  let songs = fs.readdirSync("./songs");
+  let songsList = JSON.parse(fs.readFileSync("songsList.json"));
 
-  songs = songs.filter((s) => s.endsWith(".mp3"));
-
-  res.send(songs);
+  res.send(songsList);
 
 });
 
