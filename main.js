@@ -204,6 +204,31 @@ app.get("/songs/:fileName", (req, res) => {
 
 });
 
+app.delete("/songs/:songId", (req, res) => {
+
+  let songId = req.params.songId;
+
+  let songsList = JSON.parse(fs.readFileSync("songsList.json"));
+
+  let song = songsList.find((s) => s.id === songId);
+
+  if(!song) {
+    res.status(404).send("Not found");
+    return;
+  }
+
+  // delete song file
+  let absolutePath = `${process.cwd()}/songs/${song.path}`;
+  fs.unlinkSync(absolutePath);
+
+  // delete song from list
+  songsList = songsList.filter((s) => s.id !== songId);
+  fs.writeFileSync("songsList.json", JSON.stringify(songsList));
+
+  res.send("OK");
+
+});
+
 // app.get("/songs", (req, res) => {
 
 //   let songs = fs.readdirSync("./songs");
