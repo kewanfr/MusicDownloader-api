@@ -166,8 +166,7 @@ const downloadSongFromDatas = async (data) => {
   });
   fs.writeFileSync("songsList.json", JSON.stringify(songsList));
 
-  let absolutePath = `${process.cwd()}/${songPath}`;
-  return absolutePath;
+  return `${songName}.mp3`;
 }
 
 if(!fs.existsSync("./songs")) {
@@ -229,8 +228,8 @@ app.post("/search", async (req, res) => {
 app.post("/download", async (req, res) => {
   let data = req.body;
 
-  let song = await downloadSongFromDatas(data);
-  return res.sendFile(song);
+  let songPath = await downloadSongFromDatas(data);
+  return res.send(songPath);
 
 });
 
@@ -247,7 +246,8 @@ app.post("/searchDownload", async (req, res) => {
   let items = await spotifySearch(req.body.query);
 
   let songPath = await downloadSongFromDatas(items[0]);
-  res.sendFile(songPath);
+  let absolutePath = `${process.cwd()}/songs/${songPath}`;
+  res.sendFile(absolutePath);
 
 });
 
@@ -258,7 +258,8 @@ app.get("/searchDownload/:query", async (req, res) => {
   let items = await spotifySearch(query);
 
   let songPath = await downloadSongFromDatas(items[0]);
-  res.sendFile(songPath);
+  let absolutePath = `${process.cwd()}/songs/${songPath}`;
+  res.sendFile(absolutePath);
 
 });
 
