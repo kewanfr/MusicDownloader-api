@@ -193,7 +193,13 @@ app.get("/songs/:fileName", (req, res) => {
 
   let absolutePath = `${process.cwd()}/songs/${fileName}`;
 
-  res.sendFile(absolutePath);
+  // res.sendFile(absolutePath);
+  res.download(absolutePath, fileName, (err) => {
+    if (err) {
+      console.log(err);
+      res.status(404).send('File not found');
+    }
+  });
 
 });
 
