@@ -227,6 +227,8 @@ app.delete("/songs/:songId", (req, res) => {
 
   res.send("OK");
 
+  console.log(`Delete song : ${song.name}`);
+
 });
 
 // app.get("/songs", (req, res) => {
