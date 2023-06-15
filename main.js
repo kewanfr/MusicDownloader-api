@@ -137,9 +137,8 @@ const downloadSongFromDatas = async (data) => {
 
   // regarder si le fichier existe
   if (fs.existsSync(songPath)) {
-    let absolutePath = `${process.cwd()}/${songPath}`;
     console.log(`Fichier déjà téléchargé : ${songPath}`);
-    return absolutePath;
+    return `${songName}.mp3`;
   }
 
   let downloadedSong = await downloadSongSpotify(uri, songPathBefore);
