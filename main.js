@@ -162,7 +162,7 @@ const downloadSongFromDatas = async (data) => {
     cover,
     album,
     duration_ms,
-    path: songPath
+    path: `${songName}.mp3`
   });
   fs.writeFileSync("songsList.json", JSON.stringify(songsList));
 
